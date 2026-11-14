@@ -25,9 +25,8 @@
 import argparse
 import re
 import sys
-from datetime import date
+from datetime import datetime
 from pathlib import Path
-
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
@@ -72,7 +71,7 @@ def render_template(
     """テンプレートのプレースホルダーを置換する。"""
     rendered = template
     rendered = rendered.replace("{STATUS}", status)
-    rendered = rendered.replace("{DATE}", date.today().isoformat())
+    rendered = rendered.replace("{DATE}", datetime.now().astimezone().date().isoformat())
     rendered = rendered.replace("{DECISION_MAKERS}", decision_makers)
     rendered = rendered.replace("{NUMBER}", f"{number:04d}")
     rendered = rendered.replace("{TITLE}", title)
@@ -82,8 +81,8 @@ def render_template(
     # \n---\n の最初の出現 = front matter の閉じ区切り（先頭の --- には前の \n がないため）
     if supersedes is not None:
         rendered = re.sub(
-            r'\n(---)\n',
-            f'\nsupersedes: {supersedes:04d}\n\\1\n',
+            r"\n(---)\n",
+            f"\nsupersedes: {supersedes:04d}\n\\1\n",
             rendered,
             count=1,
         )
@@ -102,7 +101,8 @@ def update_superseded_adr(decisions_dir: Path, old_number: int, new_number: int)
 
     if target is None:
         print(
-            f"Warning: supersedes 対象の ADR-{old_number:04d} が {decisions_dir} に見つかりません。",
+            f"Warning: supersedes 対象の ADR-{old_number:04d} が"
+            f" {decisions_dir} に見つかりません。",
             file=sys.stderr,
         )
         return None
@@ -122,7 +122,8 @@ def update_superseded_adr(decisions_dir: Path, old_number: int, new_number: int)
 
     if n_replacements == 0:
         print(
-            f"Warning: {target.name} の status 行を見つけられませんでした。手動で更新してください。",
+            f"Warning: {target.name} の status 行を見つけられませんでした。"
+            "手動で更新してください。",
             file=sys.stderr,
         )
         return None
@@ -149,9 +150,7 @@ def parse_args() -> argparse.Namespace:
         help="決定者(カンマ区切り)",
     )
     parser.add_argument("--status", default="accepted", help="ステータス(デフォルト: accepted)")
-    parser.add_argument(
-        "--supersedes", type=int, default=None, help="覆す既存 ADR の番号(整数)"
-    )
+    parser.add_argument("--supersedes", type=int, default=None, help="覆す既存 ADR の番号(整数)")
     return parser.parse_args()
 
 
@@ -161,7 +160,8 @@ def main() -> int:
     # slug の妥当性チェック
     if not re.match(r"^[a-z0-9][a-z0-9-]*$", args.slug):
         print(
-            f"Error: slug は英小文字・数字・ハイフンのみで、先頭は英小文字または数字: {args.slug!r}",
+            "Error: slug は英小文字・数字・ハイフンのみで、先頭は英小文字または数字: "
+            f"{args.slug!r}",
             file=sys.stderr,
         )
         return 1

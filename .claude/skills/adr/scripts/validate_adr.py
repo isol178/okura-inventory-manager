@@ -135,9 +135,7 @@ def validate_front_matter(fm: dict) -> list[Issue]:
         # YAML が自動で date 型に変換することがあるので両方許容
         date_str = date_val.isoformat() if hasattr(date_val, "isoformat") else str(date_val)
         if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
-            issues.append(
-                Issue("error", f"date は YYYY-MM-DD 形式である必要がある: {date_val!r}")
-            )
+            issues.append(Issue("error", f"date は YYYY-MM-DD 形式である必要がある: {date_val!r}"))
 
     # decision-makers が空でない
     if "decision-makers" in fm:
@@ -154,9 +152,7 @@ def validate_structure(body: str) -> list[Issue]:
     # H1 タイトル行
     title_match = re.search(r"^# (\d{4})\. (.+)$", body, re.MULTILINE)
     if not title_match:
-        issues.append(
-            Issue("error", "H1 タイトル行 '# NNNN. <タイトル>' が見つからない")
-        )
+        issues.append(Issue("error", "H1 タイトル行 '# NNNN. <タイトル>' が見つからない"))
     else:
         title_text = title_match.group(2).strip()
         if not title_text or title_text.startswith("{"):
@@ -164,7 +160,7 @@ def validate_structure(body: str) -> list[Issue]:
                 Issue("error", f"タイトルが未記入またはプレースホルダーのまま: {title_text!r}")
             )
 
-    # 起票シグナルコメント(警告レベル)
+    # 起票シグナルコメント（警告レベル）
     if not re.search(r"<!--\s*起票シグナル:", body):
         issues.append(
             Issue("warning", "起票シグナルコメント '<!-- 起票シグナル: ... -->' が見つからない")
@@ -177,13 +173,11 @@ def validate_structure(body: str) -> list[Issue]:
         if not re.search(pattern, body, re.MULTILINE):
             issues.append(Issue("error", f"必須セクション '{section}' が見つからない"))
 
-    # 推奨セクション(警告レベル)
+    # 推奨セクション（警告レベル）
     for section in OPTIONAL_BUT_RECOMMENDED:
         pattern = rf"^#{{2,3}}\s+{re.escape(section)}\s*$"
         if not re.search(pattern, body, re.MULTILINE):
-            issues.append(
-                Issue("warning", f"推奨セクション '{section}' が見つからない")
-            )
+            issues.append(Issue("warning", f"推奨セクション '{section}' が見つからない"))
 
     return issues
 
@@ -251,11 +245,11 @@ def validate_quality_gates(body: str) -> list[Issue]:
 
     # Consequences に Bad, because が最低1項目
     consequences = extract_section(body, "Consequences")
-    bad_items = re.findall(
-        r"^- Bad, because\s+(.+)$", consequences, re.MULTILINE | re.IGNORECASE
-    )
+    bad_items = re.findall(r"^- Bad, because\s+(.+)$", consequences, re.MULTILINE | re.IGNORECASE)
     bad_real = [
-        item for item in bad_items if not (item.strip().startswith("{") and item.strip().endswith("}"))
+        item
+        for item in bad_items
+        if not (item.strip().startswith("{") and item.strip().endswith("}"))
     ]
     if len(bad_real) < 1:
         issues.append(
@@ -274,17 +268,13 @@ def validate_quality_gates(body: str) -> list[Issue]:
 
     # Decision Outcome にプレースホルダーが残っていない
     outcome = extract_section(body, "Decision Outcome")
-    if re.search(r'\{[A-Z_0-9]+\}', outcome):
-        issues.append(
-            Issue("error", "Decision Outcome にプレースホルダーが残っている")
-        )
+    if re.search(r"\{[A-Z_0-9]+\}", outcome):
+        issues.append(Issue("error", "Decision Outcome にプレースホルダーが残っている"))
 
     # More Information に Confidence の記載(警告)
     more_info = extract_section(body, "More Information")
     if more_info and not re.search(r"\*\*Confidence\*\*\s*:", more_info):
-        issues.append(
-            Issue("warning", "More Information に Confidence の記載がない")
-        )
+        issues.append(Issue("warning", "More Information に Confidence の記載がない"))
 
     return issues
 
@@ -363,10 +353,7 @@ def main() -> int:
         total_warnings += len(warnings)
 
     print()
-    print(
-        f"検証完了: {len(files)} ファイル / "
-        f"errors: {total_errors} / warnings: {total_warnings}"
-    )
+    print(f"検証完了: {len(files)} ファイル / errors: {total_errors} / warnings: {total_warnings}")
 
     if total_errors > 0:
         return 1
