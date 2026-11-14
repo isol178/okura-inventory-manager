@@ -111,8 +111,9 @@ def update_superseded_adr(decisions_dir: Path, old_number: int, new_number: int)
     new_status = f'"superseded by {new_number:04d}"'
 
     # front matter 内の status を置換（ダブルクォート・シングルクォート・クォートなし を許容）
+    # 行末を越えて後続の行を巻き込まないよう、空白と値は改行を含まない文字クラスに限る
     new_content, n_replacements = re.subn(
-        r'^status:\s*["\']?[^"\']*["\']?',
+        r'^status:[ \t]*["\']?[^"\'\n]*["\']?',
         f"status: {new_status}",
         content,
         count=1,

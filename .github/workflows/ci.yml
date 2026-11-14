@@ -38,6 +38,9 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Run pre-commit
+        env:
+          # main への push 後の CI はブランチが main になるため、ローカル専用のガードは外す
+          SKIP: no-commit-to-branch
         run: uv run pre-commit run --all-files --show-diff-on-failure
 
   test:

@@ -77,7 +77,7 @@ ADR を書くべきかは、たった一つの問いで決まる:
 採番とテンプレ展開はスクリプトで自動化する。**プロジェクトルートを作業ディレクトリ**にして実行する（`docs/decisions/` はここに作成される）。スクリプトは本スキルに付属しており、`SKILL.md` があるディレクトリ（例: `.claude/skills/adr`）を `<skill-dir>` として絶対パスで実行する:
 
 ```bash
-python <skill-dir>/scripts/new_adr.py "use-iam-db-auth" \
+uv run python <skill-dir>/scripts/new_adr.py "use-iam-db-auth" \
   --title "Use IAM authentication for DB access" \
   --signals "S1,S2" \
   --decision-makers "Haruki, Agent (via Claude Code)"
@@ -110,7 +110,7 @@ python <skill-dir>/scripts/new_adr.py "use-iam-db-auth" \
 提出前に検証スクリプトを実行する（プロジェクトルートから実行）:
 
 ```bash
-python <skill-dir>/scripts/validate_adr.py docs/decisions/NNNN-use-iam-db-auth.md
+uv run python <skill-dir>/scripts/validate_adr.py docs/decisions/NNNN-use-iam-db-auth.md
 ```
 
 このスクリプトは以下を機械的にチェックする:
@@ -128,7 +128,7 @@ python <skill-dir>/scripts/validate_adr.py docs/decisions/NNNN-use-iam-db-auth.m
 - Confirmation セクション
 - More Information に Confidence の記載
 
-warning が残っている場合はドラフトに戻って追記する。`python <skill-dir>/scripts/validate_adr.py --strict` が通ることを品質の目安とする。
+warning が残っている場合はドラフトに戻って追記する。`uv run python <skill-dir>/scripts/validate_adr.py --strict` が通ることを品質の目安とする。
 
 機械的にチェックできない品質基準(出所の妥当性、Confirmation の実効性、inverted pyramid 文体)は人間/エージェントの目視確認による。チェックリストは `references/madr-template.md` の末尾にある。
 

@@ -53,16 +53,16 @@ Progressive Disclosure(skill-creator の3層構造)に従い:
 
 ```bash
 # 最小
-python scripts/new_adr.py "use-iam-db-auth"
+uv run python scripts/new_adr.py "use-iam-db-auth"
 
 # 推奨(タイトルとシグナルを明示)
-python scripts/new_adr.py "use-iam-db-auth" \
+uv run python scripts/new_adr.py "use-iam-db-auth" \
   --title "Use IAM authentication for DB access" \
   --signals S1,S2 \
   --decision-makers "Haruki,Claude"
 
 # 既存 ADR を覆す場合
-python scripts/new_adr.py "use-pgbouncer" \
+uv run python scripts/new_adr.py "use-pgbouncer" \
   --title "Adopt PgBouncer for connection pooling" \
   --supersedes 3
 ```
@@ -73,13 +73,13 @@ python scripts/new_adr.py "use-pgbouncer" \
 
 ```bash
 # 単一ファイル
-python scripts/validate_adr.py docs/decisions/0001-use-iam-db-auth.md
+uv run python scripts/validate_adr.py docs/decisions/0001-use-iam-db-auth.md
 
 # ディレクトリ全体
-python scripts/validate_adr.py docs/decisions/
+uv run python scripts/validate_adr.py docs/decisions/
 
 # warning も error 扱いにする(CI 用)
-python scripts/validate_adr.py --strict docs/decisions/
+uv run python scripts/validate_adr.py --strict docs/decisions/
 ```
 
 ## 何を ADR にすべきか / すべきでないか
@@ -113,7 +113,7 @@ python scripts/validate_adr.py --strict docs/decisions/
 デフォルトは `docs/decisions/` (Martin Fowler / MADR の推奨)。`docs/adr/` 等に変えたい場合:
 
 ```bash
-python scripts/new_adr.py <slug> --decisions-dir docs/adr
+uv run python scripts/new_adr.py <slug> --decisions-dir docs/adr
 ```
 
 ### テンプレートを編集する
@@ -146,7 +146,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install pyyaml
-      - run: python .skills/adr/scripts/validate_adr.py --strict docs/decisions/
+      - run: uv run python .skills/adr/scripts/validate_adr.py --strict docs/decisions/
 ```
 
 ## 設計上の選択
