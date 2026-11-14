@@ -4,15 +4,24 @@
 
 台所の在庫係エージェント。構想は [docs/concept.md](docs/concept.md) を参照。
 
+## 文書
+
+| 文書 | 内容 |
+|---|---|
+| [docs/concept.md](docs/concept.md) | 構想・要件・設計原則・ロードマップ（正典） |
+| [docs/evals.md](docs/evals.md) | エージェントの出荷前評価（Evals）の方針 |
+| [docs/decisions/](docs/decisions/) | ADR（コードから読み取れない技術判断の記録、MADR 4.0.0 形式） |
+| [CLAUDE.md](CLAUDE.md) | Claude Code 向けの規約とフックの説明 |
+
 ## 必要なもの
 
-- [uv](https://docs.astral.sh/uv/)（Python 本体と依存はすべて uv が管理する）
+- [uv](https://docs.astral.sh/uv/) 0.13 系（Python 本体と依存はすべて uv が管理する。対応する版は `pyproject.toml` の `required-version` で固定）
 - make（任意。`make help` でコマンド一覧）
 
 ## セットアップ
 
 ```sh
-make setup        # = uv sync && uv run pre-commit install
+make setup        # = uv sync --locked && uv run pre-commit install
 ```
 
 Python のバージョンは `.python-version`（3.14）で固定しており、未インストールなら uv が自動で取得する。
@@ -36,7 +45,7 @@ Python のバージョンは `.python-version`（3.14）で固定しており、
 | ワークフロー | トリガー | 内容 |
 |---|---|---|
 | `ci.yml` | main への push / PR | pre-commit 全フック（ruff・mypy・actionlint・zizmor ほか）、Ubuntu と macOS でのテスト、wheel のビルドとスモークテスト、`uv audit` |
-| `release.yml` | `v*` タグの push | CI を通してからビルドし、GitHub Release に成果物を添付 |
+| `release.yml` | `v*` タグの push | CI を通し、CI がビルドしてスモークテストした配布物をそのまま GitHub Release に添付（再ビルドしない） |
 
 - ブランチ保護の必須チェックには `CI OK` ジョブだけを指定すればよい
 - Dependabot が uv・GitHub Actions・pre-commit を毎週更新する
@@ -61,7 +70,8 @@ git tag "v$(uv version --short)" && git push origin "v$(uv version --short)"
 ```
 src/okura/      アプリ本体（src レイアウト）
 tests/          pytest
-docs/           コンセプト・設計文書
+docs/           コンセプト・評価方針
+docs/decisions/ ADR
 .github/        CI/CD と Dependabot
 .claude/        Claude Code の設定とフック（内容は CLAUDE.md）
 ```

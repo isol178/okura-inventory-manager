@@ -1,4 +1,4 @@
-# v* タグの push で CI を通したうえでパッケージをビルドし、GitHub Release を作る。
+# v* タグの push で CI を通し、CI がビルドした配布物で GitHub Release を作る。
 # おくらは自宅 Mac でのみ動かす（外部公開しない）ため、PyPI への公開や自動デプロイはしない。
 name: Release
 

@@ -144,7 +144,8 @@
   - 在庫とレシピの突き合わせ、期限の推定に使う。保存日数は出典を記録し、ユーザーが修正できる
 - `meals`: id, date, title, recipe_id（NULL 可）, used_items, suggested_by_agent, rating
 - `schedules`: id, name, kind（time / trigger）, cron または run_at, trigger_spec（JSON）, prompt, allowed_tools, cooldown, created_by（user / agent）, approved, enabled, last_run_at
-- `runs`: id, schedule_id, started_at, status, tokens, cost, output, notified
+- `runs`: id, schedule_id, started_at, status, model, prompt_hash, tokens, cost, output, notified
+  - model と prompt_hash は、評価結果と実行を比較できるようにするため（`docs/evals.md` §3）
 - `tool_calls`: エージェントの全ツール呼び出しログ
 
 category と `stock_events` はフェーズ0から持たせ、消耗品への拡張時に作り直さずに済むようにする。
@@ -245,6 +246,8 @@ category と `stock_events` はフェーズ0から持たせ、消耗品への拡
 | 4 | トリガー指定スケジュール、エージェントによる提案と承認 UI | 通知から1タップで承認できる | 2週末 |
 | 5 | 消耗品管理（消費ペース推定、補充提案、買い場所別リスト） | 日用品の補充提案が届く | 1〜2週末 |
 | 6 | 好みの学習、観測ダッシュボード、家族共有 | — | 随時 |
+
+フェーズ1以降は、表の「完了の定義」に加えて、そのフェーズまでに着手したエージェント評価の項目がすべて合格基準を満たすことを完了の条件とする（`docs/evals.md` §1・§2）。
 
 ---
 
