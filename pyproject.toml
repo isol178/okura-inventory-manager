@@ -26,6 +26,8 @@ dev = [
 ]
 
 [tool.uv]
+# ローカル・CI（setup-uv はこの値を読む）・uv-lock フック・uv_build で uv のバージョンを揃える
+required-version = ">=0.13.4,<0.14"
 default-groups = ["dev"]
 
 # ---------------------------------------------------------------------------
@@ -35,7 +37,6 @@ default-groups = ["dev"]
 line-length = 100
 target-version = "py314"
 src = ["src", "tests"]
-extend-exclude = [".claude"]
 
 [tool.ruff.lint]
 select = [
@@ -64,6 +65,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]  # assert を許可
 "src/okura/cli.py" = ["T20"]  # CLI は print で出力する
+".claude/skills/*/scripts/*.py" = ["T20"]  # スキルの CLI スクリプトも print で出力する
 
 [tool.ruff.format]
 docstring-code-format = true

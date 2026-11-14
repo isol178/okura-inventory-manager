@@ -8,7 +8,7 @@ setup: sync ## 初回セットアップ（依存のインストールと git フ
 	uv run pre-commit install
 
 sync: ## 依存を uv.lock どおりにインストール
-	uv sync
+	uv sync --locked
 
 lint: ## lint と format のチェック（修正はしない）
 	uv run ruff check

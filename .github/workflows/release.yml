@@ -41,8 +41,12 @@ jobs:
             echo "::error::Tag ${TAG} does not match project version v${version}"
             exit 1
           fi
-      - name: Build sdist and wheel
-        run: uv build
+      # CI の build ジョブでスモークテストを通した配布物をそのまま使う（再ビルドしない）
+      - name: Download built distributions
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: dist
+          path: dist/
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
