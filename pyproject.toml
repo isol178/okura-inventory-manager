@@ -1,0 +1,102 @@
+[project]
+name = "okura"
+version = "0.1.0"
+description = "おくら — 台所の在庫係エージェント"
+readme = "README.md"
+authors = [
+    { name = "Haruki Inaba", email = "isol.dev178@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+okura = "okura.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.13.4,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+# ---------------------------------------------------------------------------
+# ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+src = ["src", "tests"]
+extend-exclude = [".claude"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "N",        # pep8-naming
+    "UP",       # pyupgrade
+    "B",        # flake8-bugbear
+    "A",        # flake8-builtins
+    "C4",       # flake8-comprehensions
+    "DTZ",      # flake8-datetimez（期限計算でナイーブな datetime を使わない）
+    "T20",      # flake8-print
+    "SIM",      # flake8-simplify
+    "PTH",      # flake8-use-pathlib
+    "RUF",      # ruff 固有
+    "S",        # flake8-bandit（セキュリティ）
+    "PT",       # flake8-pytest-style
+    "RET",      # flake8-return
+    "ERA",      # コメントアウトされたコード
+]
+ignore = [
+    "RUF001", "RUF002", "RUF003",  # 全角文字（日本語の文字列・コメント）を許可
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]  # assert を許可
+"src/okura/cli.py" = ["T20"]  # CLI は print で出力する
+
+[tool.ruff.format]
+docstring-code-format = true
+
+# ---------------------------------------------------------------------------
+# mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.14"
+strict = true
+files = ["src", "tests"]
+warn_unreachable = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+
+# ---------------------------------------------------------------------------
+# pytest / coverage
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--import-mode=importlib"]
+xfail_strict = true
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["okura"]
+branch = true
+omit = ["*/okura/__main__.py"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+skip_covered = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]

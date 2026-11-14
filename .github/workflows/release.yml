@@ -1,0 +1,50 @@
+# v* タグの push で CI を通したうえでパッケージをビルドし、GitHub Release を作る。
+# おくらは自宅 Mac でのみ動かす（外部公開しない）ため、PyPI への公開や自動デプロイはしない。
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    # actionlint が $/ 構文に未対応のため、従来の ./ 形式を使う
+    uses: ./.github/workflows/ci.yml # zizmor: ignore[self-repository]
+
+  release:
+    name: Build and publish GitHub Release
+    needs: [ci]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: false
+      - name: Verify tag matches project version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(uv version --short)"
+          if [ "v${version}" != "${TAG}" ]; then
+            echo "::error::Tag ${TAG} does not match project version v${version}"
+            exit 1
+          fi
+      - name: Build sdist and wheel
+        run: uv build
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "${TAG}" dist/* --title "${TAG}" --generate-notes --verify-tag
