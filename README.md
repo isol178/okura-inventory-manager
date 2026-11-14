@@ -45,9 +45,15 @@ Python のバージョンは `.python-version`（3.14）で固定しており、
 ### リリース手順
 
 ```sh
-uv version --bump minor   # pyproject.toml のバージョンを更新
+# 1. 作業ブランチでバージョンを上げて PR を出し、main にマージする
+git switch -c release/next
+uv version --bump minor   # pyproject.toml と uv.lock のバージョンを更新
 git commit -am "Release v$(uv version --short)"
-git tag "v$(uv version --short)" && git push --follow-tags
+gh pr create --fill
+
+# 2. マージ後、main の最新にタグを付けて push する（release.yml が起動する）
+git switch main && git pull
+git tag "v$(uv version --short)" && git push origin "v$(uv version --short)"
 ```
 
 ## ディレクトリ構成
